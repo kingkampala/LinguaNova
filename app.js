@@ -3,8 +3,10 @@ const mongoose = require('mongoose');
 require('dotenv').config();
 
 const app = express();
+const route = require('./route/translate');
 
 app.use(express.json());
+app.use(`/translate`, route);
 
 const port = process.env.PORT || 3000;
 const db_url = process.env.URL_DB;
