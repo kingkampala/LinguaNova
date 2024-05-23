@@ -1,19 +1,26 @@
-const OpenAI = require('openai');
+const { OpenAI } = require('openai');
 const TransModel = require('../model/translate');
 require('dotenv').config();
 
 // initialize OpenAI
-const openai = new OpenAI({ key: process.env.OPENAI_API_KEY });
+const openai = new OpenAI(process.env.OPENAI_API_KEY);
 
 const translateText = async (req, res) => {
   try {
     const { sourceLanguage, translateLanguage, sourceText } = req.body;
 
-    // Use OpenAI to translate the text (replace with actual translation logic)
-    const translatedText = await openai.translate(sourceText, {
-      source_language: sourceLanguage,
-      translate_language: translateLanguage,
+    // Construct the prompt for translation
+    const prompt = `Translate this text from ${sourceLanguage} to ${translateLanguage}: "${sourceText}"`;
+
+    // Use OpenAI to translate the text
+    const response = await openai.createCompletion({
+        engine: "davinci", // or any other appropriate model
+        prompt: prompt,
+        max_tokens: 100, // adjust based on expected length of the translated text
     });
+
+    // Use OpenAI to translate the text (replace with actual translation logic)
+    const translatedText = response.data.choices[0].text.trim();
 
     // Save the translation to the database
     const translation = new TransModel({
